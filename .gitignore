@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Configuracao local da maquina (caminho do SDK) - nunca versionar
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+.kotlin/
+
+# Artefatos de build
+*.apk
+*.aab
+*.aar
+*.ap_
+*.dex
+
+# macOS
+.DS_Store
