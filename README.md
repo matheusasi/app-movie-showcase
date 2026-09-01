@@ -13,13 +13,11 @@ Trabalho de Android — Etapa 2 (implementação em sala, 01/09).
 
 | # | Tela | Arquivo | Responsável |
 |---|------|---------|-------------|
-| 1 | Início — destaque da semana e recomendados | `ui/TelaInicio.kt` | integrante 1 |
-| 2 | Buscar — campo de texto + filtro por gênero | `ui/TelaBuscar.kt` | integrante 2 |
-| 3 | Detalhe — sinopse, nota média e ações | `ui/TelaDetalhe.kt` | integrante 3 |
-| 4 | Minha Lista — abas Quero ver / Assistidos | `ui/TelaLista.kt` | integrante 1 |
-| 5 | Avaliar — data, local, nota e comentário | `ui/TelaAvaliar.kt` | integrante 2 |
-
-> Troque "integrante N" pelos nomes reais antes de entregar.
+| 1 | Início — destaque da semana e recomendados | `ui/TelaInicio.kt` | Matheus Rodrigues Cassab Asinelli Beyersdorff |
+| 2 | Buscar — campo de texto + filtro por gênero | `ui/TelaBuscar.kt` | Matheus Henrique Farias de Jesus |
+| 3 | Detalhe — sinopse, nota média e ações | `ui/TelaDetalhe.kt` | João Adolfo Bonato |
+| 4 | Minha Lista — abas Quero ver / Assistidos | `ui/TelaLista.kt` | Matheus Rodrigues Cassab Asinelli Beyersdorff |
+| 5 | Avaliar — data, local, nota e comentário | `ui/TelaAvaliar.kt` | Matheus Henrique Farias de Jesus |
 
 ## Fluxo principal
 
@@ -27,16 +25,37 @@ Início → toca num filme → Detalhe → "Avaliar este filme" → Avaliar → 
 filme vai para a aba "Assistidos" da Minha Lista. A barra inferior troca de tela
 a qualquer momento.
 
-## Restrições respeitadas
+## O que foi usado (só o conteúdo das aulas)
 
-Só foram usados componentes do Jetpack Compose + Material 3 que já vêm no projeto.
-Nenhuma biblioteca nova foi adicionada — em especial, **não** usamos
-`navigation-compose`, `ViewModel`, Room, Retrofit nem carregamento de imagens.
+Todo o app usa apenas o que foi apresentado nas aulas (Kotlin básico, `when`,
+coleções, funções/lambdas, POO e as duas aulas de Jetpack Compose). Nada de
+biblioteca nova.
 
-- Navegação: estado simples (`remember { mutableStateOf(...) }`) no `MainActivity.kt`.
-- Estilo: cores aplicadas inline (`Color(0xFFE8341C)` etc.), sem arquivo de tema.
-- Dados: lista fixa em `data/Filme.kt` (15 filmes), sem internet e sem banco.
-- Estado da lista/avaliações: `mutableStateListOf` no `MainActivity.kt`.
+- **Navegação:** um estado `var telaAtual by remember { mutableStateOf(...) }` +
+  `when (telaAtual)` no `MainActivity.kt`. Sem `navigation-compose`.
+- **Estado das listas:** `var ... by remember { mutableStateOf(listOf(...)) }`.
+  Para incluir/remover um id, funções que montam uma lista nova com
+  `mutableListOf` + `forEach` + `add` (aula de coleções). Sem `mutableStateListOf`.
+- **Listas na tela:** `Column { lista.forEach { ... } }` — como no formulário da
+  aula. Sem `LazyColumn`.
+- **Tela base:** `Scaffold { innerPadding -> ... }` (aula do formulário).
+- **Formulário (Avaliar):** `OutlinedTextField`, `RadioButton`, `Slider`,
+  `DatePickerDialog` + `rememberDatePickerState` — os mesmos da aula.
+- **Cores:** só as constantes nomeadas (`Color.Black`, `Color.Red`, `Color.White`,
+  `Color.Gray`, `Color.LightGray`), como `Color.Blue`/`Color.White` da aula.
+- **Dados:** lista fixa de 15 filmes em `data/Filme.kt`. Sem internet, sem banco,
+  sem carregar imagem (o poster é um retângulo cinza).
+
+Única exceção: `@OptIn(ExperimentalMaterial3Api::class)` em `TelaAvaliar.kt`, que
+o `DatePicker` exige para compilar (é o mesmo componente da aula `myapplication`).
+
+## Observação sobre rolagem
+
+As telas **não rolam** — a rolagem (`verticalScroll` / `LazyColumn`) não foi dada
+em aula, então as telas foram feitas para caber. Em telas de celular menores, a
+tela de Busca (com muitos resultados) e a de Avaliar podem cortar conteúdo
+embaixo. Se o professor permitir, basta adicionar `.verticalScroll(rememberScrollState())`
+no `Column` externo dessas telas.
 
 ## Estrutura
 
@@ -45,6 +64,7 @@ app/src/main/java/com/example/projetomobile/
 ├── MainActivity.kt        navegação por estado + estado compartilhado
 ├── data/Filme.kt          modelos (Filme, Avaliacao) e catálogo fixo
 └── ui/
+    ├── theme/             ProjetoMobileTheme (gerado, igual ao das aulas)
     ├── Componentes.kt     barra superior/inferior, poster, item de filme, botões
     ├── TelaInicio.kt
     ├── TelaBuscar.kt
@@ -57,13 +77,16 @@ app/src/main/java/com/example/projetomobile/
 
 1. Abra o Android Studio → **Open** → selecione esta pasta.
 2. Espere o Gradle sincronizar.
-3. Escolha o emulador `Pixel_8` e clique em ▶ **Run**.
+3. Escolha um emulador (ex.: `Pixel_8`) e clique em ▶ **Run**.
 
 Pelo terminal:
 
 ```bash
-./gradlew assembleDebug          # gera o APK
-./gradlew installDebug           # instala no emulador/celular conectado
+./gradlew assembleDebug
+```
+
+```bash
+./gradlew installDebug
 ```
 
 ## Versões

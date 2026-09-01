@@ -8,19 +8,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.projetomobile.data.Avaliacao
 import com.example.projetomobile.data.CATALOGO
 import com.example.projetomobile.data.Filme
+import com.example.projetomobile.data.filmePorId
 import com.example.projetomobile.ui.BarraInferior
 import com.example.projetomobile.ui.BarraTopo
 import com.example.projetomobile.ui.TELA_AVALIAR
@@ -33,38 +32,74 @@ import com.example.projetomobile.ui.TelaBuscar
 import com.example.projetomobile.ui.TelaDetalhe
 import com.example.projetomobile.ui.TelaInicio
 import com.example.projetomobile.ui.TelaLista
+import com.example.projetomobile.ui.theme.ProjetoMobileTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
-                AppCineteca()
+            ProjetoMobileTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    AppCineteca(Modifier.padding(innerPadding))
+                }
             }
         }
     }
 }
 
+// Converte uma lista de ids numa lista de filmes (aula de coleções: forEach + .find).
+fun filmesPorId(ids: List<Int>): List<Filme> {
+    val filmes = mutableListOf<Filme>()
+    ids.forEach { id ->
+        val filme = filmePorId(id)
+        if (filme != null) {
+            filmes.add(filme)
+        }
+    }
+    return filmes
+}
+
+// Devolve uma nova lista com o id incluído (sem duplicar).
+fun comItem(lista: List<Int>, id: Int): List<Int> {
+    val nova = mutableListOf<Int>()
+    lista.forEach { nova.add(it) }
+    if (!nova.contains(id)) {
+        nova.add(id)
+    }
+    return nova
+}
+
+// Devolve uma nova lista sem o id.
+fun semItem(lista: List<Int>, id: Int): List<Int> {
+    val nova = mutableListOf<Int>()
+    lista.forEach { atual ->
+        if (atual != id) {
+            nova.add(atual)
+        }
+    }
+    return nova
+}
+
 @Composable
-fun AppCineteca() {
-    // Navegacao simples: guardamos o nome da tela atual em um estado.
+fun AppCineteca(modifier: Modifier = Modifier) {
+    // Navegação simples: o nome da tela atual fica guardado num estado.
     var telaAtual by remember { mutableStateOf(TELA_INICIO) }
     var telaAnterior by remember { mutableStateOf(TELA_INICIO) }
-    var filmeAberto by remember { mutableStateOf<Filme?>(null) }
+    var filmeAberto by remember { mutableStateOf(CATALOGO[0]) }
 
     // Estado do app: ids dos filmes em cada aba da Minha Lista.
-    val queroVer = remember { mutableStateListOf(1, 2, 7, 8, 9) }
-    val assistidos = remember { mutableStateListOf(4, 3, 6) }
-    val avaliacoes = remember { mutableStateListOf<Avaliacao>() }
+    var queroVer by remember { mutableStateOf(listOf(2, 12, 14)) }
+    var assistidos by remember { mutableStateOf(listOf(4, 3)) }
 
-    fun irPara(tela: String) {
+    // Funções guardadas em variáveis (aula de funções: lambda em val).
+    val abrirFilme: (Filme) -> Unit = { filme ->
+        filmeAberto = filme
+        telaAnterior = telaAtual
+        telaAtual = TELA_DETALHE
+    }
+    val irPara: (String) -> Unit = { tela ->
         telaAnterior = telaAtual
         telaAtual = tela
-    }
-
-    fun abrirFilme(filme: Filme) {
-        filmeAberto = filme
-        irPara(TELA_DETALHE)
     }
 
     val titulo = when (telaAtual) {
@@ -75,77 +110,65 @@ fun AppCineteca() {
         else -> "Cineteca"
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize()) {
         BarraTopo(titulo)
         Box(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxSize()
-                .background(Color(0xFFF3F1EF))
+                .background(Color.LightGray)
         ) {
             when (telaAtual) {
-                TELA_INICIO -> TelaInicio(
-                    tamanhoLista = queroVer.size + assistidos.size,
-                    aoAbrirFilme = { abrirFilme(it) },
-                    aoVerTodos = { irPara(TELA_BUSCAR) }
-                )
-
-                TELA_BUSCAR -> TelaBuscar(
-                    aoAbrirFilme = { abrirFilme(it) }
-                )
+                TELA_BUSCAR -> TelaBuscar(aoAbrirFilme = abrirFilme)
 
                 TELA_LISTA -> TelaLista(
-                    queroVer = queroVer.mapNotNull { id -> CATALOGO.find { it.id == id } },
-                    assistidos = assistidos.mapNotNull { id -> CATALOGO.find { it.id == id } },
-                    aoAbrirFilme = { abrirFilme(it) },
+                    queroVer = filmesPorId(queroVer),
+                    assistidos = filmesPorId(assistidos),
+                    aoAbrirFilme = abrirFilme,
                     aoRemover = { filme ->
-                        queroVer.remove(filme.id)
-                        assistidos.remove(filme.id)
+                        queroVer = semItem(queroVer, filme.id)
+                        assistidos = semItem(assistidos, filme.id)
                     }
                 )
 
                 TELA_AVALIAR -> TelaAvaliar(
                     filmeInicial = filmeAberto,
                     aoSalvar = { avaliacao ->
-                        avaliacoes.add(avaliacao)
-                        queroVer.remove(avaliacao.filmeId)
-                        if (!assistidos.contains(avaliacao.filmeId)) {
-                            assistidos.add(avaliacao.filmeId)
-                        }
+                        queroVer = semItem(queroVer, avaliacao.filmeId)
+                        assistidos = comItem(assistidos, avaliacao.filmeId)
                     }
                 )
 
-                TELA_DETALHE -> {
-                    val filme = filmeAberto
-                    if (filme == null) {
-                        telaAtual = TELA_INICIO
-                    } else {
-                        TelaDetalhe(
-                            filme = filme,
-                            naLista = queroVer.contains(filme.id) || assistidos.contains(filme.id),
-                            aoVoltar = { irPara(telaAnterior) },
-                            aoAlternarLista = {
-                                if (queroVer.contains(filme.id) || assistidos.contains(filme.id)) {
-                                    queroVer.remove(filme.id)
-                                    assistidos.remove(filme.id)
-                                } else {
-                                    queroVer.add(filme.id)
-                                }
-                            },
-                            aoAvaliar = { irPara(TELA_AVALIAR) }
-                        )
-                    }
-                }
+                TELA_DETALHE -> TelaDetalhe(
+                    filme = filmeAberto,
+                    naLista = queroVer.contains(filmeAberto.id) || assistidos.contains(filmeAberto.id),
+                    aoVoltar = { telaAtual = telaAnterior },
+                    aoAlternarLista = {
+                        if (queroVer.contains(filmeAberto.id) || assistidos.contains(filmeAberto.id)) {
+                            queroVer = semItem(queroVer, filmeAberto.id)
+                            assistidos = semItem(assistidos, filmeAberto.id)
+                        } else {
+                            queroVer = comItem(queroVer, filmeAberto.id)
+                        }
+                    },
+                    aoAvaliar = { irPara(TELA_AVALIAR) }
+                )
+
+                else -> TelaInicio(
+                    tamanhoLista = queroVer.size + assistidos.size,
+                    aoAbrirFilme = abrirFilme,
+                    aoVerTodos = { irPara(TELA_BUSCAR) }
+                )
             }
         }
-        BarraInferior(telaAtual = telaAtual, aoTrocar = { irPara(it) })
+        BarraInferior(telaAtual = telaAtual, aoTrocar = irPara)
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 fun AppCinetecaPreview() {
-    MaterialTheme {
+    ProjetoMobileTheme {
         AppCineteca()
     }
 }

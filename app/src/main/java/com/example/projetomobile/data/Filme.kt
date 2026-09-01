@@ -1,6 +1,6 @@
 package com.example.projetomobile.data
 
-import java.util.Locale
+// data class -> gera toString(), equals(), copy() e desestruturação (aula de POO)
 data class Filme(
     val id: Int,
     val titulo: String,
@@ -12,6 +12,7 @@ data class Filme(
     val totalAvaliacoes: Int,
     val sinopse: String
 )
+
 data class Avaliacao(
     val filmeId: Int,
     val data: String,
@@ -20,15 +21,18 @@ data class Avaliacao(
     val comentario: String
 )
 
-val GENEROS = listOf("Todos", "Drama", "Suspense", "Ficção", "Comédia", "Animação")
+// Listas fixas (aula de coleções). Os gêneros abaixo são exatamente os usados no catálogo.
+val GENEROS = listOf("Todos", "Drama", "Suspense", "Ficção científica", "Comédia", "Animação")
 val LOCAIS = listOf("Cinema", "Streaming", "TV aberta")
+
 val CATALOGO = listOf(
     Filme(
         1, "Sete Samurais", 1954, "Drama", 207, "Akira Kurosawa", 9.2, 2841,
         "Uma aldeia de camponeses contrata sete guerreiros sem mestre para defendê-la " +
             "de bandidos que voltam a cada colheita."
     ),
-    Filme(2, "A Chegada", 2016, "Ficção científica", 116, "Denis Villeneuve", 8.4, 1932,
+    Filme(
+        2, "A Chegada", 2016, "Ficção científica", 116, "Denis Villeneuve", 8.4, 1932,
         "Doze naves pousam pelo mundo e uma linguista é chamada para descobrir o que " +
             "os visitantes querem antes que o medo vença."
     ),
@@ -40,7 +44,7 @@ val CATALOGO = listOf(
     Filme(
         4, "Parasita", 2019, "Suspense", 132, "Bong Joon-ho", 8.9, 1204,
         "Uma família pobre se infiltra, um a um, na casa de uma família rica de Seul. " +
-            "O plano funciona até que o porão da casa revela o que estava escondido ali embaixo."
+            "O plano funciona até o porão da casa revelar o que estava escondido ali."
     ),
     Filme(
         5, "Memórias de um Assassino", 2003, "Suspense", 132, "Bong Joon-ho", 8.1, 874,
@@ -55,7 +59,7 @@ val CATALOGO = listOf(
     Filme(
         7, "O Fabuloso Destino de Amélie Poulain", 2001, "Comédia", 122, "Jean-Pierre Jeunet", 8.3, 1580,
         "Uma garçonete tímida de Montmartre decide arrumar em segredo a vida das pessoas " +
-            "à sua volta — e esquece de arrumar a própria."
+            "à sua volta e esquece de arrumar a própria."
     ),
     Filme(
         8, "Tempos Modernos", 1936, "Comédia", 87, "Charles Chaplin", 8.5, 1420,
@@ -90,7 +94,7 @@ val CATALOGO = listOf(
     Filme(
         14, "Interestelar", 2014, "Ficção científica", 169, "Christopher Nolan", 8.7, 3402,
         "Com a Terra morrendo, um grupo de astronautas atravessa um buraco de minhoca " +
-            "atrás de um novo planeta — e o tempo cobra caro por isso."
+            "atrás de um novo planeta e o tempo cobra caro por isso."
     ),
     Filme(
         15, "Bacurau", 2019, "Suspense", 132, "Kleber Mendonça Filho", 7.6, 788,
@@ -99,11 +103,15 @@ val CATALOGO = listOf(
     )
 )
 
-fun buscarFilme(id: Int): Filme? = CATALOGO.find { it.id == id }
-fun formatarNota(nota: Double): String =
-    String.format(Locale.US, "%.1f", nota).replace('.', ',')
-fun formatarNota(nota: Float): String =
-    String.format(Locale.US, "%.1f", nota).replace('.', ',')
+// Busca um filme pelo id (aula de POO: .find em uma lista). Retorna null se não achar.
+fun filmePorId(id: Int): Filme? {
+    return CATALOGO.find { it.id == id }
+}
 
-fun formatarTotal(total: Int): String =
-    String.format(Locale.forLanguageTag("pt-BR"), "%,d", total)
+// Formata a nota com uma casa decimal usando só aritmética (9.2 -> "9,2").
+fun formatarNota(nota: Double): String {
+    val d = (nota * 10 + 0.5).toInt()
+    val inteira = d / 10
+    val decimal = d - inteira * 10
+    return "$inteira,$decimal"
+}

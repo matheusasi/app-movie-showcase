@@ -1,7 +1,6 @@
 package com.example.projetomobile.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,60 +8,49 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.projetomobile.data.Filme
 import com.example.projetomobile.data.formatarNota
 
-const val TELA_INICIO = "inicio"
-const val TELA_BUSCAR = "buscar"
-const val TELA_LISTA = "lista"
-const val TELA_AVALIAR = "avaliar"
-const val TELA_DETALHE = "detalhe"
+// Nomes das telas. A navegacao no MainActivity usa when(telaAtual) com estes valores.
+val TELA_INICIO = "inicio"
+val TELA_BUSCAR = "buscar"
+val TELA_LISTA = "lista"
+val TELA_AVALIAR = "avaliar"
+val TELA_DETALHE = "detalhe"
 
 @Composable
 fun BarraTopo(titulo: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF1B1B1B))
-            .statusBarsPadding()
+            .background(Color.Black)
             .height(44.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = titulo.uppercase(),
-            color = Color(0xFFFFFFFF),
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 1.sp
+            color = Color.White,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
         )
     }
 }
 
 @Composable
 fun BarraInferior(telaAtual: String, aoTrocar: (String) -> Unit) {
-    Column(modifier = Modifier.background(Color(0xFFFFFFFF))) {
-        HorizontalDivider(thickness = 2.dp, color = Color(0xFF1B1B1B))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-        ) {
+    Column(modifier = Modifier.background(Color.White)) {
+        Separador(cor = Color.Black)
+        Row(modifier = Modifier.fillMaxWidth()) {
             ItemBarra("Início", TELA_INICIO, telaAtual, Modifier.weight(1f), aoTrocar)
             ItemBarra("Buscar", TELA_BUSCAR, telaAtual, Modifier.weight(1f), aoTrocar)
             ItemBarra("Lista", TELA_LISTA, telaAtual, Modifier.weight(1f), aoTrocar)
@@ -82,24 +70,24 @@ private fun ItemBarra(
     val ativa = telaAtual == tela || (telaAtual == TELA_DETALHE && tela == TELA_INICIO)
     Box(
         modifier = modifier
-            .background(if (ativa) Color(0xFFE8341C) else Color(0xFFFFFFFF))
+            .background(if (ativa) Color.Red else Color.White)
             .clickable { aoTrocar(tela) }
             .height(56.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = rotulo.uppercase(),
-            color = if (ativa) Color(0xFFFFFFFF) else Color(0xFF1B1B1B),
+            color = if (ativa) Color.White else Color.Black,
             fontSize = 13.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 0.5.sp
+            fontWeight = FontWeight.Bold
         )
     }
 }
 
+// Retangulo cinza no lugar do poster (a aula nao ensinou a carregar imagem).
 @Composable
 fun Poster(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.background(Color(0xFFBDB9B6)))
+    Box(modifier = modifier.background(Color.Gray))
 }
 
 @Composable
@@ -116,18 +104,16 @@ fun TituloSecao(
     ) {
         Text(
             text = texto.uppercase(),
-            color = Color(0xFF1B1B1B),
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 1.sp
+            color = Color.Black,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold
         )
         if (acao != null) {
             Text(
                 text = acao.uppercase(),
-                color = Color(0xFFE8341C),
+                color = Color.Red,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 0.5.sp,
                 modifier = Modifier.clickable { aoClicarAcao() }
             )
         }
@@ -159,27 +145,23 @@ fun ItemFilme(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 14.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(horizontal = 14.dp)
         ) {
             Text(
                 text = filme.titulo.uppercase(),
-                color = Color(0xFF1B1B1B),
+                color = Color.Black,
                 fontSize = 17.sp,
-                fontWeight = FontWeight.Black,
-                lineHeight = 21.sp
+                fontWeight = FontWeight.Bold
             )
             Text(
                 text = subtitulo,
-                color = Color(0xFF8C8C8C),
-                fontSize = 14.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                color = Color.Gray,
+                fontSize = 14.sp
             )
             if (mostrarNota) {
                 Text(
                     text = "NOTA ${formatarNota(filme.nota)}",
-                    color = Color(0xFFE8341C),
+                    color = Color.Red,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -188,10 +170,9 @@ fun ItemFilme(
         if (acao != null) {
             Text(
                 text = acao.uppercase(),
-                color = Color(0xFFE8341C),
+                color = Color.Red,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.End,
                 modifier = Modifier.clickable { aoClicarAcao() }
             )
         }
@@ -203,17 +184,16 @@ fun BotaoPrimario(texto: String, modifier: Modifier = Modifier, aoClicar: () -> 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color(0xFFE8341C))
+            .background(Color.Red)
             .clickable { aoClicar() }
-            .padding(vertical = 18.dp, horizontal = 20.dp),
-        contentAlignment = Alignment.CenterStart
+            .padding(vertical = 16.dp, horizontal = 20.dp),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = texto.uppercase(),
-            color = Color(0xFFFFFFFF),
+            color = Color.White,
             fontSize = 16.sp,
-            fontWeight = FontWeight.Black,
-            letterSpacing = 0.5.sp
+            fontWeight = FontWeight.Bold
         )
     }
 }
@@ -223,40 +203,44 @@ fun BotaoSecundario(texto: String, modifier: Modifier = Modifier, aoClicar: () -
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color(0xFFFFFFFF))
-            .border(2.dp, Color(0xFF1B1B1B))
+            .background(Color.LightGray)
             .clickable { aoClicar() }
-            .padding(vertical = 18.dp, horizontal = 20.dp),
-        contentAlignment = Alignment.CenterStart
+            .padding(vertical = 16.dp, horizontal = 20.dp),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = texto.uppercase(),
-            color = Color(0xFF1B1B1B),
+            color = Color.Black,
             fontSize = 16.sp,
-            fontWeight = FontWeight.Black,
-            letterSpacing = 0.5.sp
+            fontWeight = FontWeight.Bold
         )
     }
 }
 
 @Composable
-fun Separador(modifier: Modifier = Modifier, cor: Color = Color(0xFFDDD9D6)) {
-    HorizontalDivider(modifier = modifier, thickness = 1.dp, color = cor)
+fun Separador(modifier: Modifier = Modifier, cor: Color = Color.LightGray) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(cor)
+    )
 }
 
 @Composable
 fun Badge(texto: String, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .background(Color(0xFFE8341C))
-            .size(width = 72.dp, height = 52.dp),
+            .width(72.dp)
+            .height(52.dp)
+            .background(Color.Red),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = texto,
-            color = Color(0xFFFFFFFF),
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Black
+            color = Color.White,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold
         )
     }
 }
