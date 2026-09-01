@@ -5,9 +5,9 @@ Trabalho de Android — Etapa 2 (implementação em sala, 01/09).
 
 ## Integrantes
 
-Matheus Rodrigues Cassab Asinelli Beyersdorff
-Matheus Henrique Farias de Jesus
-João Adolfo Bonato
+- Matheus Rodrigues Cassab Asinelli Beyersdorff
+- Matheus Henrique Farias de Jesus
+- João Adolfo Bonato
 
 ## Telas implementadas (5)
 
