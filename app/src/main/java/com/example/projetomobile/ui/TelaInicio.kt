@@ -28,9 +28,7 @@ import com.example.projetomobile.ui.theme.ProjetoMobileTheme
 
 @Composable
 fun TelaInicio(
-    tamanhoLista: Int,
     aoAbrirFilme: (Filme) -> Unit,
-    aoVerTodos: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val destaque = CATALOGO[0]
@@ -49,7 +47,7 @@ fun TelaInicio(
             Text("SUA BIBLIOTECA", color = Color.Red, fontSize = 13.sp, fontWeight = FontWeight.Bold)
             Text("CINETECA", color = Color.Black, fontSize = 34.sp, fontWeight = FontWeight.Bold)
             Text(
-                text = "${CATALOGO.size} filmes catalogados · $tamanhoLista na sua lista",
+                text = "${CATALOGO.size} filmes catalogados",
                 color = Color.Gray,
                 fontSize = 14.sp
             )
@@ -106,11 +104,7 @@ fun TelaInicio(
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 14.dp)
         ) {
-            TituloSecao(
-                texto = "Recomendados para você",
-                acao = "Ver todos",
-                aoClicarAcao = aoVerTodos
-            )
+            TituloSecao("Recomendados para você")
             recomendados.forEach { filme ->
                 ItemFilme(
                     filme = filme,
@@ -127,6 +121,6 @@ fun TelaInicio(
 @Composable
 fun TelaInicioPreview() {
     ProjetoMobileTheme {
-        TelaInicio(tamanhoLista = 5, aoAbrirFilme = {}, aoVerTodos = {})
+        TelaInicio(aoAbrirFilme = {})
     }
 }

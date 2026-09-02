@@ -1,4 +1,4 @@
-// Tela 3 — Detalhe do filme (sinopse, nota média e ações)
+// Tela 2 — Detalhe do filme (sinopse, nota média e ação)
 // Responsável: João Adolfo Bonato
 package com.example.projetomobile.ui
 
@@ -29,9 +29,7 @@ import com.example.projetomobile.ui.theme.ProjetoMobileTheme
 @Composable
 fun TelaDetalhe(
     filme: Filme,
-    naLista: Boolean,
     aoVoltar: () -> Unit,
-    aoAlternarLista: () -> Unit,
     aoAvaliar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -105,14 +103,9 @@ fun TelaDetalhe(
             modifier = Modifier
                 .background(Color.White)
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(16.dp)
         ) {
-            BotaoPrimario(
-                texto = if (naLista) "Remover da minha lista" else "Adicionar à minha lista",
-                aoClicar = aoAlternarLista
-            )
-            BotaoSecundario(texto = "Avaliar este filme", aoClicar = aoAvaliar)
+            BotaoPrimario(texto = "Avaliar este filme", aoClicar = aoAvaliar)
         }
     }
 }
@@ -123,9 +116,7 @@ fun TelaDetalhePreview() {
     ProjetoMobileTheme {
         TelaDetalhe(
             filme = CATALOGO[0],
-            naLista = false,
             aoVoltar = {},
-            aoAlternarLista = {},
             aoAvaliar = {}
         )
     }

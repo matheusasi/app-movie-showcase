@@ -21,8 +21,7 @@ data class Avaliacao(
     val comentario: String
 )
 
-// Listas fixas (aula de coleções). Os gêneros abaixo são exatamente os usados no catálogo.
-val GENEROS = listOf("Todos", "Drama", "Suspense", "Ficção científica", "Comédia", "Animação")
+// Listas fixas (aula de coleções).
 val LOCAIS = listOf("Cinema", "Streaming", "TV aberta")
 
 val CATALOGO = listOf(
@@ -102,11 +101,6 @@ val CATALOGO = listOf(
             "O lugar decide se defender do seu próprio jeito."
     )
 )
-
-// Busca um filme pelo id (aula de POO: .find em uma lista). Retorna null se não achar.
-fun filmePorId(id: Int): Filme? {
-    return CATALOGO.find { it.id == id }
-}
 
 // Formata a nota com uma casa decimal usando só aritmética (9.2 -> "9,2").
 fun formatarNota(nota: Double): String {

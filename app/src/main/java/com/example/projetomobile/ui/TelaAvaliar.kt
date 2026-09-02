@@ -1,4 +1,4 @@
-// Tela 5 — Avaliar filme (data, local, nota e comentário)
+// Tela 3 — Avaliar filme (data, local, nota e comentário)
 // Responsável: Matheus Henrique Farias de Jesus
 package com.example.projetomobile.ui
 
@@ -48,7 +48,6 @@ import com.example.projetomobile.ui.theme.ProjetoMobileTheme
 @Composable
 fun TelaAvaliar(
     filmeInicial: Filme,
-    aoSalvar: (Avaliacao) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var data by remember { mutableStateOf("Clique para selecionar") }
@@ -158,8 +157,9 @@ fun TelaAvaliar(
             if (data == "Clique para selecionar") {
                 mensagem = "Escolha a data em que você assistiu."
             } else {
-                aoSalvar(Avaliacao(filmeInicial.id, data, onde, nota, comentario))
-                mensagem = "Avaliação de ${filmeInicial.titulo} salva com nota ${nota.toInt()}."
+                val av = Avaliacao(filmeInicial.id, data, onde, nota, comentario)
+                mensagem = "Avaliação de ${filmeInicial.titulo} salva: nota ${av.nota.toInt()}, " +
+                    "assistido em ${av.data} (${av.onde})."
             }
         }
     }
@@ -169,6 +169,6 @@ fun TelaAvaliar(
 @Composable
 fun TelaAvaliarPreview() {
     ProjetoMobileTheme {
-        TelaAvaliar(filmeInicial = CATALOGO[0], aoSalvar = {})
+        TelaAvaliar(filmeInicial = CATALOGO[0])
     }
 }

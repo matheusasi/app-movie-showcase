@@ -2,7 +2,6 @@ package com.example.projetomobile.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,10 +22,8 @@ import com.example.projetomobile.data.formatarNota
 
 // Nomes das telas. A navegacao no MainActivity usa when(telaAtual) com estes valores.
 val TELA_INICIO = "inicio"
-val TELA_BUSCAR = "buscar"
-val TELA_LISTA = "lista"
-val TELA_AVALIAR = "avaliar"
 val TELA_DETALHE = "detalhe"
+val TELA_AVALIAR = "avaliar"
 
 @Composable
 fun BarraTopo(titulo: String) {
@@ -52,8 +49,6 @@ fun BarraInferior(telaAtual: String, aoTrocar: (String) -> Unit) {
         Separador(cor = Color.Black)
         Row(modifier = Modifier.fillMaxWidth()) {
             ItemBarra("Início", TELA_INICIO, telaAtual, Modifier.weight(1f), aoTrocar)
-            ItemBarra("Buscar", TELA_BUSCAR, telaAtual, Modifier.weight(1f), aoTrocar)
-            ItemBarra("Lista", TELA_LISTA, telaAtual, Modifier.weight(1f), aoTrocar)
             ItemBarra("Avaliar", TELA_AVALIAR, telaAtual, Modifier.weight(1f), aoTrocar)
         }
     }
@@ -91,33 +86,14 @@ fun Poster(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TituloSecao(
-    texto: String,
-    modifier: Modifier = Modifier,
-    acao: String? = null,
-    aoClicarAcao: () -> Unit = {}
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = texto.uppercase(),
-            color = Color.Black,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold
-        )
-        if (acao != null) {
-            Text(
-                text = acao.uppercase(),
-                color = Color.Red,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.clickable { aoClicarAcao() }
-            )
-        }
-    }
+fun TituloSecao(texto: String, modifier: Modifier = Modifier) {
+    Text(
+        text = texto.uppercase(),
+        color = Color.Black,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -125,9 +101,6 @@ fun ItemFilme(
     filme: Filme,
     subtitulo: String,
     modifier: Modifier = Modifier,
-    mostrarNota: Boolean = true,
-    acao: String? = null,
-    aoClicarAcao: () -> Unit = {},
     aoClicar: () -> Unit = {}
 ) {
     Row(
@@ -153,27 +126,12 @@ fun ItemFilme(
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold
             )
+            Text(text = subtitulo, color = Color.Gray, fontSize = 14.sp)
             Text(
-                text = subtitulo,
-                color = Color.Gray,
-                fontSize = 14.sp
-            )
-            if (mostrarNota) {
-                Text(
-                    text = "NOTA ${formatarNota(filme.nota)}",
-                    color = Color.Red,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-        if (acao != null) {
-            Text(
-                text = acao.uppercase(),
+                text = "NOTA ${formatarNota(filme.nota)}",
                 color = Color.Red,
                 fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.clickable { aoClicarAcao() }
+                fontWeight = FontWeight.Bold
             )
         }
     }
@@ -192,25 +150,6 @@ fun BotaoPrimario(texto: String, modifier: Modifier = Modifier, aoClicar: () -> 
         Text(
             text = texto.uppercase(),
             color = Color.White,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-@Composable
-fun BotaoSecundario(texto: String, modifier: Modifier = Modifier, aoClicar: () -> Unit) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color.LightGray)
-            .clickable { aoClicar() }
-            .padding(vertical = 16.dp, horizontal = 20.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = texto.uppercase(),
-            color = Color.Black,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
         )
