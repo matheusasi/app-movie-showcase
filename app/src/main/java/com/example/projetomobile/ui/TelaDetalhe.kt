@@ -31,8 +31,7 @@ fun TelaDetalhe(
     filme: Filme,
     naLista: Boolean,
     aoVoltar: () -> Unit,
-    aoAlternarLista: () -> Unit,
-    aoAvaliar: () -> Unit
+    aoAlternarLista: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -132,7 +131,6 @@ fun TelaDetalhe(
                 texto = if (naLista) "Remover da minha lista" else "Adicionar à minha lista",
                 aoClicar = aoAlternarLista
             )
-            BotaoSecundario(texto = "Avaliar este filme", aoClicar = aoAvaliar)
         }
     }
 }

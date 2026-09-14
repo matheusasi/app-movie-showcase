@@ -29,8 +29,7 @@ import com.example.projetomobile.data.formatarNota
 @Composable
 fun TelaInicio(
     tamanhoLista: Int,
-    aoAbrirFilme: (Filme) -> Unit,
-    aoVerTodos: () -> Unit
+    aoAbrirFilme: (Filme) -> Unit
 ) {
     val destaque = CATALOGO[0]
     val recomendados = CATALOGO.subList(1, 4)
@@ -120,11 +119,7 @@ fun TelaInicio(
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 18.dp)
         ) {
-            TituloSecao(
-                texto = "Recomendados para você",
-                acao = "Ver todos",
-                aoClicarAcao = aoVerTodos
-            )
+            TituloSecao(texto = "Recomendados para você")
             recomendados.forEachIndexed { indice, filme ->
                 ItemFilme(
                     filme = filme,
