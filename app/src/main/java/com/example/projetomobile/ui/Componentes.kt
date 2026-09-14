@@ -64,9 +64,7 @@ fun BarraInferior(telaAtual: String, aoTrocar: (String) -> Unit) {
                 .navigationBarsPadding()
         ) {
             ItemBarra("Início", TELA_INICIO, telaAtual, Modifier.weight(1f), aoTrocar)
-            ItemBarra("Buscar", TELA_BUSCAR, telaAtual, Modifier.weight(1f), aoTrocar)
             ItemBarra("Lista", TELA_LISTA, telaAtual, Modifier.weight(1f), aoTrocar)
-            ItemBarra("Avaliar", TELA_AVALIAR, telaAtual, Modifier.weight(1f), aoTrocar)
         }
     }
 }

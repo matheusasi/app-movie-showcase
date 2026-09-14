@@ -18,18 +18,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.projetomobile.data.Avaliacao
 import com.example.projetomobile.data.CATALOGO
 import com.example.projetomobile.data.Filme
 import com.example.projetomobile.ui.BarraInferior
 import com.example.projetomobile.ui.BarraTopo
-import com.example.projetomobile.ui.TELA_AVALIAR
-import com.example.projetomobile.ui.TELA_BUSCAR
 import com.example.projetomobile.ui.TELA_DETALHE
 import com.example.projetomobile.ui.TELA_INICIO
 import com.example.projetomobile.ui.TELA_LISTA
-import com.example.projetomobile.ui.TelaAvaliar
-import com.example.projetomobile.ui.TelaBuscar
 import com.example.projetomobile.ui.TelaDetalhe
 import com.example.projetomobile.ui.TelaInicio
 import com.example.projetomobile.ui.TelaLista
@@ -55,7 +50,6 @@ fun AppCineteca() {
     // Estado do app: ids dos filmes em cada aba da Minha Lista.
     val queroVer = remember { mutableStateListOf(1, 2, 7, 8, 9) }
     val assistidos = remember { mutableStateListOf(4, 3, 6) }
-    val avaliacoes = remember { mutableStateListOf<Avaliacao>() }
 
     fun irPara(tela: String) {
         telaAnterior = telaAtual
@@ -68,9 +62,7 @@ fun AppCineteca() {
     }
 
     val titulo = when (telaAtual) {
-        TELA_BUSCAR -> "Buscar"
         TELA_LISTA -> "Minha Lista"
-        TELA_AVALIAR -> "Avaliar"
         TELA_DETALHE -> "Detalhe"
         else -> "Cineteca"
     }
@@ -86,11 +78,6 @@ fun AppCineteca() {
             when (telaAtual) {
                 TELA_INICIO -> TelaInicio(
                     tamanhoLista = queroVer.size + assistidos.size,
-                    aoAbrirFilme = { abrirFilme(it) },
-                    aoVerTodos = { irPara(TELA_BUSCAR) }
-                )
-
-                TELA_BUSCAR -> TelaBuscar(
                     aoAbrirFilme = { abrirFilme(it) }
                 )
 
@@ -101,17 +88,6 @@ fun AppCineteca() {
                     aoRemover = { filme ->
                         queroVer.remove(filme.id)
                         assistidos.remove(filme.id)
-                    }
-                )
-
-                TELA_AVALIAR -> TelaAvaliar(
-                    filmeInicial = filmeAberto,
-                    aoSalvar = { avaliacao ->
-                        avaliacoes.add(avaliacao)
-                        queroVer.remove(avaliacao.filmeId)
-                        if (!assistidos.contains(avaliacao.filmeId)) {
-                            assistidos.add(avaliacao.filmeId)
-                        }
                     }
                 )
 
@@ -131,8 +107,7 @@ fun AppCineteca() {
                                 } else {
                                     queroVer.add(filme.id)
                                 }
-                            },
-                            aoAvaliar = { irPara(TELA_AVALIAR) }
+                            }
                         )
                     }
                 }
