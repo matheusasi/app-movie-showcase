@@ -26,16 +26,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.projetomobile.data.Filme
+import com.example.projetomobile.data.CATALOGO
+import com.example.projetomobile.data.ListaManager
 
 @Composable
 fun TelaLista(
-    queroVer: List<Filme>,
-    assistidos: List<Filme>,
-    aoAbrirFilme: (Filme) -> Unit,
-    aoRemover: (Filme) -> Unit
+    irParaDetalhes: (Int) -> Unit
 ) {
     var abaQueroVer by remember { mutableStateOf(true) }
+    val queroVer = ListaManager.queroVer.mapNotNull { id -> CATALOGO.find { it.id == id } }
+    val assistidos = ListaManager.assistidos.mapNotNull { id -> CATALOGO.find { it.id == id } }
     val visiveis = if (abaQueroVer) queroVer else assistidos
     val total = queroVer.size + assistidos.size
 
@@ -105,8 +105,8 @@ fun TelaLista(
                         subtitulo = "${filme.ano} · ${filme.genero}",
                         mostrarNota = false,
                         acao = "Remover",
-                        aoClicarAcao = { aoRemover(filme) },
-                        aoClicar = { aoAbrirFilme(filme) }
+                        aoClicarAcao = { ListaManager.remover(filme.id) },
+                        aoClicar = { irParaDetalhes(filme.id) }
                     )
                     Separador()
                 }

@@ -29,11 +29,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.projetomobile.data.CATALOGO
-import com.example.projetomobile.data.Filme
 import com.example.projetomobile.data.GENEROS
 
 @Composable
-fun TelaBuscar(aoAbrirFilme: (Filme) -> Unit) {
+fun TelaBuscar(irParaDetalhes: (Int) -> Unit) {
     var texto by remember { mutableStateOf("") }
     var generoAtivo by remember { mutableStateOf(GENEROS[0]) }
 
@@ -161,7 +160,7 @@ fun TelaBuscar(aoAbrirFilme: (Filme) -> Unit) {
                     ItemFilme(
                         filme = filme,
                         subtitulo = "${filme.ano} · ${filme.diretor}",
-                        aoClicar = { aoAbrirFilme(filme) }
+                        aoClicar = { irParaDetalhes(filme.id) }
                     )
                     Separador()
                 }

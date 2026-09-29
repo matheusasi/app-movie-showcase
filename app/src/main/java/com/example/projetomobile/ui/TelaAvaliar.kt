@@ -45,8 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.projetomobile.data.Avaliacao
 import com.example.projetomobile.data.CATALOGO
-import com.example.projetomobile.data.Filme
 import com.example.projetomobile.data.LOCAIS
+import com.example.projetomobile.data.ListaManager
+import com.example.projetomobile.data.buscarFilme
 import com.example.projetomobile.data.formatarNota
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -55,10 +56,10 @@ import java.util.TimeZone
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TelaAvaliar(
-    filmeInicial: Filme?,
-    aoSalvar: (Avaliacao) -> Unit
+    filmeId: Int,
+    voltar: () -> Unit
 ) {
-    var filme by remember { mutableStateOf(filmeInicial ?: CATALOGO[0]) }
+    var filme by remember { mutableStateOf(buscarFilme(filmeId) ?: CATALOGO[0]) }
     var data by remember { mutableStateOf("") }
     var onde by remember { mutableStateOf(LOCAIS[0]) }
     var nota by remember { mutableFloatStateOf(8.5f) }
@@ -209,11 +210,16 @@ fun TelaAvaliar(
                 if (data.isBlank()) {
                     mensagem = "Escolha a data em que você assistiu."
                 } else {
-                    aoSalvar(Avaliacao(filme.id, data, onde, nota, comentario))
-                    mensagem = "Avaliação de ${filme.titulo} salva com nota ${formatarNota(nota)}."
-                    comentario = ""
+                    if (ListaManager.avaliar(Avaliacao(filme.id, data, onde, nota, comentario))) {
+                        mensagem = "Avaliação de ${filme.titulo} salva com nota ${formatarNota(nota)}."
+                        comentario = ""
+                    } else {
+                        mensagem = "Você já avaliou ${filme.titulo}."
+                    }
                 }
             }
+
+            BotaoSecundario(texto = "Voltar", aoClicar = voltar)
         }
     }
 
