@@ -9,10 +9,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -27,12 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.projetomobile.data.Filme
 import com.example.projetomobile.data.formatarNota
-
-const val TELA_INICIO = "inicio"
-const val TELA_BUSCAR = "buscar"
-const val TELA_LISTA = "lista"
-const val TELA_AVALIAR = "avaliar"
-const val TELA_DETALHE = "detalhe"
 
 @Composable
 fun BarraTopo(titulo: String) {
@@ -50,47 +43,6 @@ fun BarraTopo(titulo: String) {
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = 1.sp
-        )
-    }
-}
-
-@Composable
-fun BarraInferior(telaAtual: String, aoTrocar: (String) -> Unit) {
-    Column(modifier = Modifier.background(Color(0xFFFFFFFF))) {
-        HorizontalDivider(thickness = 2.dp, color = Color(0xFF1B1B1B))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-        ) {
-            ItemBarra("Início", TELA_INICIO, telaAtual, Modifier.weight(1f), aoTrocar)
-            ItemBarra("Lista", TELA_LISTA, telaAtual, Modifier.weight(1f), aoTrocar)
-        }
-    }
-}
-
-@Composable
-private fun ItemBarra(
-    rotulo: String,
-    tela: String,
-    telaAtual: String,
-    modifier: Modifier,
-    aoTrocar: (String) -> Unit
-) {
-    val ativa = telaAtual == tela || (telaAtual == TELA_DETALHE && tela == TELA_INICIO)
-    Box(
-        modifier = modifier
-            .background(if (ativa) Color(0xFFE8341C) else Color(0xFFFFFFFF))
-            .clickable { aoTrocar(tela) }
-            .height(56.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = rotulo.uppercase(),
-            color = if (ativa) Color(0xFFFFFFFF) else Color(0xFF1B1B1B),
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 0.5.sp
         )
     }
 }

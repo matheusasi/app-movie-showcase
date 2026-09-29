@@ -23,3 +23,6 @@ captures/
 
 # macOS
 .DS_Store
+
+# pastas de referencia (nao versionar)
+_referencia/

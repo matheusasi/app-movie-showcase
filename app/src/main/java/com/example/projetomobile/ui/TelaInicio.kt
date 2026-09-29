@@ -23,16 +23,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.projetomobile.data.CATALOGO
-import com.example.projetomobile.data.Filme
+import com.example.projetomobile.data.ListaManager
 import com.example.projetomobile.data.formatarNota
 
 @Composable
 fun TelaInicio(
-    tamanhoLista: Int,
-    aoAbrirFilme: (Filme) -> Unit
+    irParaDetalhes: (Int) -> Unit
 ) {
     val destaque = CATALOGO[0]
     val recomendados = CATALOGO.subList(1, 4)
+    val tamanhoLista = ListaManager.queroVer.size + ListaManager.assistidos.size
 
     Column(
         modifier = Modifier
@@ -80,7 +80,7 @@ fun TelaInicio(
                     .fillMaxWidth()
                     .aspectRatio(16f / 9f)
                     .background(Color(0xFFBDB9B6))
-                    .clickable { aoAbrirFilme(destaque) },
+                    .clickable { irParaDetalhes(destaque.id) },
                 contentAlignment = Alignment.BottomStart
             ) {
                 Text(
@@ -124,7 +124,7 @@ fun TelaInicio(
                 ItemFilme(
                     filme = filme,
                     subtitulo = "${filme.ano} · ${filme.genero}",
-                    aoClicar = { aoAbrirFilme(filme) }
+                    aoClicar = { irParaDetalhes(filme.id) }
                 )
                 if (indice < recomendados.lastIndex) Separador()
             }

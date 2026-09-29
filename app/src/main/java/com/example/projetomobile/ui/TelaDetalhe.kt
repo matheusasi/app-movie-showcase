@@ -22,17 +22,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.projetomobile.data.Filme
+import com.example.projetomobile.data.ListaManager
+import com.example.projetomobile.data.buscarFilme
 import com.example.projetomobile.data.formatarNota
 import com.example.projetomobile.data.formatarTotal
 
 @Composable
 fun TelaDetalhe(
-    filme: Filme,
-    naLista: Boolean,
-    aoVoltar: () -> Unit,
-    aoAlternarLista: () -> Unit
+    filmeId: Int,
+    irParaAvaliar: (Int) -> Unit,
+    irInicio: () -> Unit,
+    voltar: () -> Unit
 ) {
+    val filme = buscarFilme(filmeId) ?: return
+    val naLista = ListaManager.naLista(filme.id)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -42,7 +46,7 @@ fun TelaDetalhe(
             modifier = Modifier
                 .background(Color(0xFFFFFFFF))
                 .fillMaxWidth()
-                .clickable { aoVoltar() }
+                .clickable { voltar() }
                 .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
             Text(
@@ -129,7 +133,18 @@ fun TelaDetalhe(
         ) {
             BotaoPrimario(
                 texto = if (naLista) "Remover da minha lista" else "Adicionar à minha lista",
-                aoClicar = aoAlternarLista
+                aoClicar = {
+                    if (naLista) ListaManager.remover(filme.id) else ListaManager.adicionar(filme.id)
+                }
+            )
+            BotaoSecundario(
+                texto = "Avaliar este filme",
+                aoClicar = { irParaAvaliar(filme.id) }
+            )
+
+            BotaoSecundario(
+                texto = "Ir para o início",
+                aoClicar = irInicio
             )
         }
     }
