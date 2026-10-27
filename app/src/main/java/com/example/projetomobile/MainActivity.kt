@@ -12,8 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.projetomobile.auth.SessaoUsuario
 import com.example.projetomobile.navigation.AppNavigation
+import com.example.projetomobile.navigation.Filmes
+import com.example.projetomobile.navigation.Login
 import com.example.projetomobile.navigation.Menu
+import com.example.projetomobile.navigation.Usuarios
 import com.example.projetomobile.ui.BarraTopo
 
 class MainActivity : ComponentActivity() {
@@ -37,6 +41,9 @@ class MainActivity : ComponentActivity() {
                     rotaAtual.contains("Lista") -> "Minha Lista"
                     rotaAtual.contains("Detalhe") -> "Detalhe"
                     rotaAtual.contains("Avaliar") -> "Avaliar"
+                    rotaAtual.contains("Avaliac") -> "Avaliações"
+                    rotaAtual.contains("Usuario") -> "Usuários"
+                    rotaAtual.contains("Filme") -> "Filmes"
                     rotaAtual.contains("Buscar") -> "Buscar"
                     else -> "Cineteca"
                 }
@@ -45,7 +52,17 @@ class MainActivity : ComponentActivity() {
                     containerColor = Color(0xFFF3F1EF),
                     topBar = {
                         if (mostrarMenu) {
-                            BarraTopo(titulo)
+                            BarraTopo(
+                                titulo = titulo,
+                                irFilmes = { navController.navigate(Filmes) },
+                                irUsuarios = { navController.navigate(Usuarios) },
+                                sair = {
+                                    SessaoUsuario.encerrar()
+                                    navController.navigate(Login){
+                                        popUpTo(0){inclusive = true}
+                                    }
+                                }
+                            )
                         }
                     },
                     bottomBar = {

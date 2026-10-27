@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,16 +27,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.projetomobile.data.CATALOGO
 import com.example.projetomobile.data.ListaManager
+import com.example.projetomobile.ui.viewmodel.FilmeViewModel
 
 @Composable
 fun TelaLista(
-    irParaDetalhes: (Int) -> Unit
+    viewModel: FilmeViewModel,
+    irParaDetalhes: (Long) -> Unit
 ) {
+    LaunchedEffect(Unit) { viewModel.listar() }
+
     var abaQueroVer by remember { mutableStateOf(true) }
-    val queroVer = ListaManager.queroVer.mapNotNull { id -> CATALOGO.find { it.id == id } }
-    val assistidos = ListaManager.assistidos.mapNotNull { id -> CATALOGO.find { it.id == id } }
+    val queroVer = ListaManager.queroVer.mapNotNull { id -> viewModel.filmes.firstOrNull { it.id == id } }
+    val assistidos = ListaManager.assistidos.mapNotNull { id -> viewModel.filmes.firstOrNull { it.id == id } }
     val visiveis = if (abaQueroVer) queroVer else assistidos
     val total = queroVer.size + assistidos.size
 

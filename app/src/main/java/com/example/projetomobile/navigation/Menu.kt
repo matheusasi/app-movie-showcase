@@ -33,7 +33,6 @@ fun Menu(
         ) {
             ItemBarra(
                 rotulo = "Início",
-                // Detalhe e Avaliar sao abertos a partir do Inicio, entao a aba fica acesa.
                 ativa = rotaAtual != null && (rotaAtual.contains("Inicio") ||
                         rotaAtual.contains("Detalhe") || rotaAtual.contains("Avaliar")),
                 modifier = Modifier.weight(1f),
@@ -50,6 +49,12 @@ fun Menu(
                 ativa = rotaAtual != null && rotaAtual.contains("Lista"),
                 modifier = Modifier.weight(1f),
                 aoTrocar = { navController.navigate(Lista) }
+            )
+            ItemBarra(
+                rotulo = "Notas",
+                ativa = rotaAtual != null && rotaAtual.contains("Avaliac"),
+                modifier = Modifier.weight(1f),
+                aoTrocar = { navController.navigate(Avaliacoes) }
             )
         }
     }

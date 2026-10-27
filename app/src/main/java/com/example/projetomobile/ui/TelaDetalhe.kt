@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,18 +24,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.projetomobile.data.ListaManager
-import com.example.projetomobile.data.buscarFilme
 import com.example.projetomobile.data.formatarNota
 import com.example.projetomobile.data.formatarTotal
+import com.example.projetomobile.ui.viewmodel.FilmeViewModel
 
 @Composable
 fun TelaDetalhe(
-    filmeId: Int,
-    irParaAvaliar: (Int) -> Unit,
+    filmeId: Long,
+    viewModel: FilmeViewModel,
+    irParaAvaliar: (Long) -> Unit,
     irInicio: () -> Unit,
     voltar: () -> Unit
 ) {
-    val filme = buscarFilme(filmeId) ?: return
+    LaunchedEffect(filmeId) { viewModel.buscarPorId(filmeId) }
+
+    val filme = viewModel.filme
+    if (filme == null) {
+        viewModel.mensagem?.let {
+            Text(text = it, color = Color(0xFFE8341C), fontSize = 15.sp, modifier = Modifier.padding(20.dp))
+        }
+        return
+    }
     val naLista = ListaManager.naLista(filme.id)
 
     Column(

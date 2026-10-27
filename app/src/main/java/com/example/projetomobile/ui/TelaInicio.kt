@@ -16,22 +16,28 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.projetomobile.data.CATALOGO
 import com.example.projetomobile.data.ListaManager
 import com.example.projetomobile.data.formatarNota
+import com.example.projetomobile.ui.viewmodel.FilmeViewModel
 
 @Composable
 fun TelaInicio(
-    irParaDetalhes: (Int) -> Unit
+    viewModel: FilmeViewModel,
+    irParaDetalhes: (Long) -> Unit
 ) {
-    val destaque = CATALOGO[0]
-    val recomendados = CATALOGO.subList(1, 4)
+    LaunchedEffect(Unit) { viewModel.listar() }
+
+    val filmes = viewModel.filmes
+    val destaque = filmes.firstOrNull()
+    val recomendados = if (filmes.isEmpty()) emptyList()
+        else filmes.subList(1, if (filmes.size > 4) 4 else filmes.size)
     val tamanhoLista = ListaManager.queroVer.size + ListaManager.assistidos.size
 
     Column(
@@ -60,58 +66,60 @@ fun TelaInicio(
                 fontWeight = FontWeight.Black
             )
             Text(
-                text = "${CATALOGO.size} filmes catalogados · $tamanhoLista na sua lista",
+                text = "${viewModel.filmes.size} filmes catalogados · $tamanhoLista na sua lista",
                 color = Color(0xFF8C8C8C),
                 fontSize = 15.sp
             )
         }
         Separador(cor = Color(0xFF1B1B1B))
 
-        Column(
-            modifier = Modifier
-                .background(Color(0xFFFFFFFF))
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 18.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-            TituloSecao("Destaque da semana")
-            Box(
+        if (destaque != null) {
+            Column(
                 modifier = Modifier
+                    .background(Color(0xFFFFFFFF))
                     .fillMaxWidth()
-                    .aspectRatio(16f / 9f)
-                    .background(Color(0xFFBDB9B6))
-                    .clickable { irParaDetalhes(destaque.id) },
-                contentAlignment = Alignment.BottomStart
+                    .padding(horizontal = 20.dp, vertical = 18.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                Text(
-                    text = destaque.titulo.uppercase(),
-                    color = Color(0xFFFFFFFF),
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Black,
+                TituloSecao("Destaque da semana")
+                Box(
                     modifier = Modifier
-                        .padding(16.dp)
-                        .background(Color(0xFFE8341C))
-                        .padding(horizontal = 16.dp, vertical = 10.dp)
-                )
+                        .fillMaxWidth()
+                        .aspectRatio(16f / 9f)
+                        .background(Color(0xFFBDB9B6))
+                        .clickable { irParaDetalhes(destaque.id) },
+                    contentAlignment = Alignment.BottomStart
+                ) {
+                    Text(
+                        text = destaque.titulo.uppercase(),
+                        color = Color(0xFFFFFFFF),
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .background(Color(0xFFE8341C))
+                            .padding(horizontal = 16.dp, vertical = 10.dp)
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "${destaque.ano} · ${destaque.genero} · ${destaque.duracaoMin} min",
+                        color = Color(0xFF8C8C8C),
+                        fontSize = 15.sp
+                    )
+                    Text(
+                        text = "NOTA ${formatarNota(destaque.nota)}",
+                        color = Color(0xFFE8341C),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "${destaque.ano} · ${destaque.genero} · ${destaque.duracaoMin} min",
-                    color = Color(0xFF8C8C8C),
-                    fontSize = 15.sp
-                )
-                Text(
-                    text = "NOTA ${formatarNota(destaque.nota)}",
-                    color = Color(0xFFE8341C),
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            Separador(cor = Color(0xFF1B1B1B))
         }
-        Separador(cor = Color(0xFF1B1B1B))
 
         Column(
             modifier = Modifier
