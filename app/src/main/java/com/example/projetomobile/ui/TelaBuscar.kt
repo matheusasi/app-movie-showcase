@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,15 +29,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.projetomobile.data.CATALOGO
 import com.example.projetomobile.data.GENEROS
+import com.example.projetomobile.ui.viewmodel.FilmeViewModel
 
 @Composable
-fun TelaBuscar(irParaDetalhes: (Int) -> Unit) {
+fun TelaBuscar(
+    viewModel: FilmeViewModel,
+    irParaDetalhes: (Long) -> Unit
+) {
+    LaunchedEffect(Unit) { viewModel.listar() }
+
     var texto by remember { mutableStateOf("") }
     var generoAtivo by remember { mutableStateOf(GENEROS[0]) }
 
-    val resultados = CATALOGO.filter { filme ->
+    val resultados = viewModel.filmes.filter { filme ->
         val casaTexto = texto.isBlank() ||
             filme.titulo.contains(texto, ignoreCase = true) ||
             filme.diretor.contains(texto, ignoreCase = true)

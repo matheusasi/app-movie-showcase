@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,17 +33,29 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.projetomobile.auth.AuthManager
+import com.example.projetomobile.ui.viewmodel.AuthViewModel
 
 @Composable
 fun CadastroScreen(
     irLogin: () -> Unit,
+    authViewModel: AuthViewModel
 ){
     var nome by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var senhaVisivel by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    LaunchedEffect(authViewModel.concluido) {
+        if (authViewModel.concluido){
+            authViewModel.consumirResultado()
+            Toast.makeText(
+                context, "Cadastro realizado com sucesso!",
+                Toast.LENGTH_SHORT
+            ).show()
+            irLogin()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -75,7 +88,7 @@ fun CadastroScreen(
 
         OutlinedTextField(
             value = nome,
-            onValueChange = { nome = it },
+            onValueChange = { if(it.length <= 100) nome = it },
             label = { Text("Nome") },
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
@@ -91,7 +104,7 @@ fun CadastroScreen(
 
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = { if(it.length <= 254) email = it },
             label = { Text("E-mail") },
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
@@ -107,7 +120,7 @@ fun CadastroScreen(
 
         OutlinedTextField(
             value = senha,
-            onValueChange = { senha = it },
+            onValueChange = { if(it.length <= 128) senha = it },
             label = { Text("Senha") },
             singleLine = true,
             visualTransformation = if (senhaVisivel)
@@ -136,33 +149,26 @@ fun CadastroScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(16.dp))
+
+        authViewModel.mensagem?.let {
+            Text(
+                text = it,
+                color = Color(0xFFE8341C),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        if (authViewModel.carregando) Text("Aguarde...", color = Color(0xFF8C8C8C), fontSize = 15.sp)
+
+        Spacer(Modifier.height(16.dp))
 
         BotaoPrimario(texto = "Cadastrar") {
-            if (nome.isBlank() || email.isBlank() || senha.isBlank()) {
-                Toast.makeText(
-                    context,
-                    "Preencha todos os campos!",
-                    Toast.LENGTH_LONG
-                ).show()
-            } else {
-                if (AuthManager.cadastrar(nome, email, senha)) {
-                    Toast.makeText(
-                        context, "Cadastro realizado com sucesso!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    irLogin()
-                } else {
-                    Toast.makeText(
-                        context,
-                        "Este e-mail já está cadastrado!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
+            authViewModel.cadastrar(nome, email, senha)
+            senha = ""
         }
 
-        TextButton(onClick = irLogin) {
+        TextButton(onClick = irLogin, enabled = !authViewModel.carregando) {
             Text(
                 text = "JÁ TEM UMA CONTA? VOLTAR PARA O LOGIN",
                 color = Color(0xFFE8341C),

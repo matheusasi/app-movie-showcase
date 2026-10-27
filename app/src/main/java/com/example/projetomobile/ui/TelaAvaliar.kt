@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -43,12 +44,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.projetomobile.data.Avaliacao
-import com.example.projetomobile.data.CATALOGO
 import com.example.projetomobile.data.LOCAIS
 import com.example.projetomobile.data.ListaManager
-import com.example.projetomobile.data.buscarFilme
 import com.example.projetomobile.data.formatarNota
+import com.example.projetomobile.ui.viewmodel.AvaliacaoViewModel
+import com.example.projetomobile.ui.viewmodel.FilmeViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -56,10 +56,14 @@ import java.util.TimeZone
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TelaAvaliar(
-    filmeId: Int,
+    filmeId: Long,
+    viewModel: AvaliacaoViewModel,
+    filmeViewModel: FilmeViewModel,
     voltar: () -> Unit
 ) {
-    var filme by remember { mutableStateOf(buscarFilme(filmeId) ?: CATALOGO[0]) }
+    var filmeSelecionadoId by remember { mutableStateOf(filmeId) }
+    val filme = filmeViewModel.filmes.firstOrNull { it.id == filmeSelecionadoId }
+        ?: filmeViewModel.filmes.firstOrNull()
     var data by remember { mutableStateOf("") }
     var onde by remember { mutableStateOf(LOCAIS[0]) }
     var nota by remember { mutableFloatStateOf(8.5f) }
@@ -67,9 +71,18 @@ fun TelaAvaliar(
 
     var listaAberta by remember { mutableStateOf(false) }
     var calendarioAberto by remember { mutableStateOf(false) }
-    var mensagem by remember { mutableStateOf("") }
 
     val estadoData = rememberDatePickerState()
+
+    LaunchedEffect(Unit) { filmeViewModel.listar() }
+
+    LaunchedEffect(viewModel.salvo) {
+        if (viewModel.salvo) {
+            viewModel.consumirSalvo()
+            if (filme != null) ListaManager.avaliar(filme.id)
+            comentario = ""
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -106,7 +119,7 @@ fun TelaAvaliar(
         ) {
             CampoClicavel(
                 rotulo = "Filme",
-                valor = "${filme.titulo} (${filme.ano})",
+                valor = if (filme != null) "${filme.titulo} (${filme.ano})" else "",
                 aoClicar = { listaAberta = true }
             )
 
@@ -184,7 +197,7 @@ fun TelaAvaliar(
                 Text(text = "Comentário", color = Color(0xFF1B1B1B), fontSize = 15.sp)
                 OutlinedTextField(
                     value = comentario,
-                    onValueChange = { comentario = it },
+                    onValueChange = { if (it.length <= 500) comentario = it },
                     placeholder = { Text("Escreva o que achou...") },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFF1B1B1B),
@@ -197,9 +210,9 @@ fun TelaAvaliar(
                 )
             }
 
-            if (mensagem.isNotEmpty()) {
+            viewModel.mensagem?.let {
                 Text(
-                    text = mensagem,
+                    text = it,
                     color = Color(0xFFE8341C),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
@@ -207,16 +220,7 @@ fun TelaAvaliar(
             }
 
             BotaoPrimario(texto = "Salvar avaliação") {
-                if (data.isBlank()) {
-                    mensagem = "Escolha a data em que você assistiu."
-                } else {
-                    if (ListaManager.avaliar(Avaliacao(filme.id, data, onde, nota, comentario))) {
-                        mensagem = "Avaliação de ${filme.titulo} salva com nota ${formatarNota(nota)}."
-                        comentario = ""
-                    } else {
-                        mensagem = "Você já avaliou ${filme.titulo}."
-                    }
-                }
+                if (filme != null) viewModel.cadastrar(filme.id, data, onde, nota, comentario)
             }
 
             BotaoSecundario(texto = "Voltar", aoClicar = voltar)
@@ -229,15 +233,15 @@ fun TelaAvaliar(
             title = { Text("Escolha o filme", fontWeight = FontWeight.Bold) },
             text = {
                 LazyColumn(modifier = Modifier.heightIn(max = 360.dp)) {
-                    items(CATALOGO, key = { it.id }) { opcao ->
+                    items(filmeViewModel.filmes, key = { it.id }) { opcao ->
                         Text(
                             text = "${opcao.titulo} (${opcao.ano})",
-                            color = if (opcao.id == filme.id) Color(0xFFE8341C) else Color(0xFF1B1B1B),
+                            color = if (opcao.id == filme?.id) Color(0xFFE8341C) else Color(0xFF1B1B1B),
                             fontSize = 16.sp,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    filme = opcao
+                                    filmeSelecionadoId = opcao.id
                                     listaAberta = false
                                 }
                                 .padding(vertical = 12.dp)
@@ -261,7 +265,6 @@ fun TelaAvaliar(
                     val millis = estadoData.selectedDateMillis
                     if (millis != null) {
                         data = formatarData(millis)
-                        mensagem = ""
                     }
                     calendarioAberto = false
                 }) {

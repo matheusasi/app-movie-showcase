@@ -13,8 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,22 +33,54 @@ import com.example.projetomobile.data.Filme
 import com.example.projetomobile.data.formatarNota
 
 @Composable
-fun BarraTopo(titulo: String) {
-    Box(
+fun BarraTopo(
+    titulo: String,
+    irFilmes: () -> Unit,
+    irUsuarios: () -> Unit,
+    sair: () -> Unit
+) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color(0xFF1B1B1B))
             .statusBarsPadding()
-            .height(44.dp),
-        contentAlignment = Alignment.Center
+            .height(52.dp)
+            .padding(start = 20.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = titulo.uppercase(),
             color = Color(0xFFFFFFFF),
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
-            letterSpacing = 1.sp
+            letterSpacing = 1.sp,
+            modifier = Modifier.weight(1f)
         )
+        TextButton(onClick = irFilmes) {
+            Text(
+                text = "FILMES",
+                color = Color(0xFFFFFFFF),
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.5.sp
+            )
+        }
+        TextButton(onClick = irUsuarios) {
+            Text(
+                text = "USUÁRIOS",
+                color = Color(0xFFFFFFFF),
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.5.sp
+            )
+        }
+        IconButton(onClick = sair) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                contentDescription = "Sair",
+                tint = Color(0xFFE8341C)
+            )
+        }
     }
 }
 

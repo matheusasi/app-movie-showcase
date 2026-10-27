@@ -35,26 +35,36 @@ Navegação com **Navigation Compose** e rotas type-safe:
 - `MainActivity.kt` — `Scaffold` com `topBar`/`bottomBar`, escondendo as duas
   barras em Login e Cadastro via `currentBackStackEntryAsState()`.
 
-## Autenticação
+## Banco de dados (SQLite)
 
-`auth/AuthManager.kt` é um `object` que guarda os usuários em memória e expõe
-`login(email, senha)` e `cadastrar(nome, email, senha)`, ambos devolvendo
-`Boolean`. As telas chamam direto e usam `Toast` para o retorno ao usuário.
-Não há persistência: os dados vivem enquanto o app estiver aberto.
+`data/local/AppDatabase.kt` estende `SQLiteOpenHelper` (versão 2) e cria as
+tabelas `usuarios`, `avaliacoes` e `filmes` (já com os 15 filmes iniciais). Os DAOs em `data/dal/` usam `writableDatabase`
+(insert, update, delete) e `readableDatabase` (query) e devolvem os models
+`Usuario`, `Avaliacao` e `Filme`.
 
-## Estado da lista
+## Autenticação e sessão
 
-`data/ListaManager.kt` segue o mesmo padrão do `AuthManager`: um `object` com a
-lista em memória e funções que devolvem `Boolean` (`naLista`, `adicionar`,
-`remover`, `avaliar`). Usa `mutableStateListOf` para o Compose recompor sozinho.
+- `auth/AuthManager.kt` gera salt e hash PBKDF2 da senha.
+- `auth/SessaoUsuario.kt` guarda o id do usuário logado; o botão de sair da
+  barra superior encerra a sessão.
+- `AppNavigation` usa um `LaunchedEffect` que manda para o Login qualquer tela
+  protegida aberta sem sessão. Login e Cadastro não mostram as barras.
 
-## Restrições
+## CRUDs (MVVM)
 
-Só Jetpack Compose + Material 3. Sem ViewModel, Room, Retrofit ou carregamento
-de imagens.
+| CRUD | ViewModel | Telas |
+|------|-----------|-------|
+| Usuários | `UsuarioViewModel` | `UsuarioScreen` (lista/excluir), `CadastroScreen` (criar), `UsuarioEditarScreen` (alterar) |
+| Avaliações | `AvaliacaoViewModel` | `TelaAvaliacoes` (lista/excluir), `TelaAvaliar` (criar), `TelaEditarAvaliacao` (alterar) |
+| Filmes | `FilmeViewModel` | `TelaFilmes` (lista/excluir), `TelaFilmeFormulario` (criar/alterar) |
 
-- Estilo: cores aplicadas inline (`Color(0xFFE8341C)` etc.), sem arquivo de tema.
-- Dados: lista fixa em `data/Filme.kt` (15 filmes), sem internet e sem banco.
+O catálogo vem do banco: Início, Buscar, Lista, Detalhe e Avaliar leem os filmes
+pelo `FilmeViewModel`, então um filme criado aparece no app todo.
+
+As listas usam `LazyColumn` e recarregam ao voltar para a tela. Cada usuário vê
+só as próprias avaliações, e cada filme só pode ser avaliado uma vez por usuário.
+
+`data/ListaManager.kt` (abas Quero ver / Assistidos) continua em memória.
 
 ## Estrutura
 
@@ -62,15 +72,22 @@ de imagens.
 app/src/main/java/com/example/projetomobile/
 ├── MainActivity.kt        Scaffold + barras + NavHost
 ├── auth/
-│   └── AuthManager.kt     login e cadastro em memória
+│   ├── AuthManager.kt     hash e salt das senhas
+│   └── SessaoUsuario.kt   usuário logado
 ├── navigation/
 │   ├── Routes.kt          rotas @Serializable
 │   ├── AppNavigation.kt   NavHost
 │   └── Menu.kt            barra inferior
 ├── data/
-│   ├── Filme.kt           modelos (Filme, Avaliacao) e catálogo fixo
-│   └── ListaManager.kt    estado da Minha Lista
+│   ├── Filme.kt           model Filme, GENEROS, LOCAIS e formatarNota
+│   ├── Usuario.kt         model
+│   ├── Avaliacao.kt       model
+│   ├── ListaManager.kt    estado da Minha Lista
+│   ├── local/AppDatabase.kt   SQLiteOpenHelper
+│   └── dal/               UsuarioDAO, AvaliacaoDAO, FilmeDAO
+├── validation/            CadastroValidator, AvaliacaoValidator, FilmeValidator
 └── ui/
+    ├── viewmodel/         AuthViewModel, UsuarioViewModel, AvaliacaoViewModel, FilmeViewModel
     ├── Componentes.kt     barra superior, poster, item de filme, botões
     ├── LoginScreen.kt
     ├── CadastroScreen.kt
@@ -94,8 +111,8 @@ Pelo terminal:
 ./gradlew installDebug           # instala no emulador/celular conectado
 ```
 
-Como não há persistência, o primeiro passo no app é **Cadastre-se**; depois
-entre com o mesmo e-mail e senha.
+No primeiro uso, toque em **Cadastre-se** e depois entre com o mesmo e-mail e
+senha. Os dados ficam salvos no SQLite do aparelho.
 
 ## Versões
 

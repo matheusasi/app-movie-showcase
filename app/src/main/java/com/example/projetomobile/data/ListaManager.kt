@@ -3,23 +3,21 @@ package com.example.projetomobile.data
 import androidx.compose.runtime.mutableStateListOf
 
 object ListaManager {
-    val queroVer = mutableStateListOf(1, 2, 7, 8, 9)
-    val assistidos = mutableStateListOf(4, 3, 6)
+    val queroVer = mutableStateListOf<Long>(1, 2, 7, 8, 9)
+    val assistidos = mutableStateListOf<Long>(4, 3, 6)
 
-    private val avaliacoes = mutableListOf<Avaliacao>()
-
-    fun naLista(id: Int): Boolean{
+    fun naLista(id: Long): Boolean{
         return queroVer.contains(id) || assistidos.contains(id)
     }
 
-    fun adicionar(id: Int): Boolean{
+    fun adicionar(id: Long): Boolean{
         if (naLista(id)) return false
 
         queroVer.add(id)
         return true
     }
 
-    fun remover(id: Int): Boolean{
+    fun remover(id: Long): Boolean{
         if (!naLista(id)) return false
 
         queroVer.remove(id)
@@ -27,12 +25,11 @@ object ListaManager {
         return true
     }
 
-    fun avaliar(avaliacao: Avaliacao): Boolean{
-        if (avaliacoes.any { it.filmeId == avaliacao.filmeId }) return false
+    fun avaliar(id: Long): Boolean{
+        queroVer.remove(id)
+        if (assistidos.contains(id)) return false
 
-        avaliacoes.add(avaliacao)
-        queroVer.remove(avaliacao.filmeId)
-        if (!assistidos.contains(avaliacao.filmeId)) assistidos.add(avaliacao.filmeId)
+        assistidos.add(id)
         return true
     }
 }
