@@ -1,5 +1,3 @@
-// Tela 1 — Início (Destaque da semana + recomendados)
-// Responsável: integrante 1
 package com.example.projetomobile.ui
 
 import androidx.compose.foundation.background
@@ -23,22 +21,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.projetomobile.data.ListaManager
 import com.example.projetomobile.data.formatarNota
 import com.example.projetomobile.ui.viewmodel.FilmeViewModel
+import com.example.projetomobile.ui.viewmodel.MinhaListaViewModel
 
 @Composable
 fun TelaInicio(
     viewModel: FilmeViewModel,
+    minhaListaViewModel: MinhaListaViewModel,
     irParaDetalhes: (Long) -> Unit
 ) {
-    LaunchedEffect(Unit) { viewModel.listar() }
+    LaunchedEffect(Unit) {
+        viewModel.listar()
+        minhaListaViewModel.listar()
+    }
 
     val filmes = viewModel.filmes
     val destaque = filmes.firstOrNull()
     val recomendados = if (filmes.isEmpty()) emptyList()
         else filmes.subList(1, if (filmes.size > 4) 4 else filmes.size)
-    val tamanhoLista = ListaManager.queroVer.size + ListaManager.assistidos.size
+    val tamanhoLista = minhaListaViewModel.itens.size
 
     Column(
         modifier = Modifier

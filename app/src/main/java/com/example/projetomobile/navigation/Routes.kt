@@ -47,3 +47,24 @@ data object CadastrarFilme
 
 @Serializable
 data class FilmeEditar(val id: Long)
+
+@Serializable
+data class ItemListaEditar(val id: Long)
+
+@Serializable
+data object Colecoes
+
+@Serializable
+data object CadastrarColecao
+
+@Serializable
+data class ColecaoEditar(val id: Long)
+
+@Serializable
+data object Momentos
+
+@Serializable
+data object CadastrarMomento
+
+@Serializable
+data class MomentoEditar(val id: Long)

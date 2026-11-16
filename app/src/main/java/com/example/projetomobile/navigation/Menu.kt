@@ -56,6 +56,12 @@ fun Menu(
                 modifier = Modifier.weight(1f),
                 aoTrocar = { navController.navigate(Avaliacoes) }
             )
+            ItemBarra(
+                rotulo = "Fotos",
+                ativa = rotaAtual != null && rotaAtual.contains("Momento"),
+                modifier = Modifier.weight(1f),
+                aoTrocar = { navController.navigate(Momentos) }
+            )
         }
     }
 }

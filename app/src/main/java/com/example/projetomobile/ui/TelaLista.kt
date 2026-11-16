@@ -1,5 +1,3 @@
-// Tela 4 — Minha Lista
-// Responsável: integrante 1
 package com.example.projetomobile.ui
 
 import androidx.compose.foundation.background
@@ -15,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,19 +26,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.projetomobile.data.ListaManager
+import com.example.projetomobile.data.ASSISTIDO
+import com.example.projetomobile.data.QUERO_VER
 import com.example.projetomobile.ui.viewmodel.FilmeViewModel
+import com.example.projetomobile.ui.viewmodel.MinhaListaViewModel
 
 @Composable
 fun TelaLista(
     viewModel: FilmeViewModel,
-    irParaDetalhes: (Long) -> Unit
+    minhaListaViewModel: MinhaListaViewModel,
+    irParaDetalhes: (Long) -> Unit,
+    irParaEdicao: (Long) -> Unit
 ) {
     LaunchedEffect(Unit) { viewModel.listar() }
 
     var abaQueroVer by remember { mutableStateOf(true) }
-    val queroVer = ListaManager.queroVer.mapNotNull { id -> viewModel.filmes.firstOrNull { it.id == id } }
-    val assistidos = ListaManager.assistidos.mapNotNull { id -> viewModel.filmes.firstOrNull { it.id == id } }
+    val queroVer = minhaListaViewModel.itens.filter { it.status == QUERO_VER }
+    val assistidos = minhaListaViewModel.itens.filter { it.status == ASSISTIDO }
     val visiveis = if (abaQueroVer) queroVer else assistidos
     val total = queroVer.size + assistidos.size
 
@@ -58,11 +61,19 @@ fun TelaLista(
                 fontWeight = FontWeight.Black
             )
             Text(
-                text = if (total == 1) "1 filme salvo neste aparelho"
-                else "$total filmes salvos neste aparelho",
+                text = if (total == 1) "1 filme na sua lista"
+                else "$total filmes na sua lista",
                 color = Color(0xFF8C8C8C),
                 fontSize = 15.sp
             )
+            minhaListaViewModel.mensagem?.let {
+                Text(
+                    text = it,
+                    color = Color(0xFFE8341C),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
 
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -103,16 +114,42 @@ fun TelaLista(
                     .fillMaxSize()
                     .padding(horizontal = 20.dp)
             ) {
-                items(visiveis, key = { it.id }) { filme ->
-                    ItemFilme(
-                        filme = filme,
-                        subtitulo = "${filme.ano} · ${filme.genero}",
-                        mostrarNota = false,
-                        acao = "Remover",
-                        aoClicarAcao = { ListaManager.remover(filme.id) },
-                        aoClicar = { irParaDetalhes(filme.id) }
-                    )
-                    Separador()
+                items(visiveis, key = { it.id }) { item ->
+                    val filme = viewModel.filmes.firstOrNull { it.id == item.filmeId }
+                    if (filme != null) {
+                        ItemFilme(
+                            filme = filme,
+                            subtitulo = if (item.observacao.isBlank()) "${filme.ano} · ${filme.genero}"
+                            else item.observacao,
+                            mostrarNota = false,
+                            aoClicar = { irParaDetalhes(filme.id) }
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            TextButton(
+                                onClick = { irParaEdicao(item.id) },
+                                enabled = !minhaListaViewModel.carregando
+                            ) {
+                                Text(
+                                    text = "ALTERAR",
+                                    color = Color(0xFFE8341C),
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            TextButton(
+                                onClick = { minhaListaViewModel.excluir(item.id) },
+                                enabled = !minhaListaViewModel.carregando
+                            ) {
+                                Text(
+                                    text = "REMOVER",
+                                    color = Color(0xFF1B1B1B),
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                        Separador()
+                    }
                 }
             }
         }

@@ -36,6 +36,7 @@ import com.example.projetomobile.data.formatarNota
 fun BarraTopo(
     titulo: String,
     irFilmes: () -> Unit,
+    irListas: () -> Unit,
     irUsuarios: () -> Unit,
     sair: () -> Unit
 ) {
@@ -54,11 +55,22 @@ fun BarraTopo(
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = 1.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
         )
         TextButton(onClick = irFilmes) {
             Text(
                 text = "FILMES",
+                color = Color(0xFFFFFFFF),
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.5.sp
+            )
+        }
+        TextButton(onClick = irListas) {
+            Text(
+                text = "LISTAS",
                 color = Color(0xFFFFFFFF),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,

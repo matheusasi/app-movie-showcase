@@ -27,11 +27,19 @@ import com.example.projetomobile.ui.TelaEditarAvaliacao
 import com.example.projetomobile.ui.TelaFilmeFormulario
 import com.example.projetomobile.ui.TelaFilmes
 import com.example.projetomobile.ui.TelaInicio
+import com.example.projetomobile.ui.TelaItemListaEditar
 import com.example.projetomobile.ui.TelaLista
+import com.example.projetomobile.ui.TelaListaFormulario
+import com.example.projetomobile.ui.TelaListas
+import com.example.projetomobile.ui.TelaMomentoFormulario
+import com.example.projetomobile.ui.TelaMomentos
 import com.example.projetomobile.ui.UsuarioEditarScreen
 import com.example.projetomobile.ui.UsuarioScreen
 import com.example.projetomobile.ui.viewmodel.AvaliacaoViewModel
 import com.example.projetomobile.ui.viewmodel.FilmeViewModel
+import com.example.projetomobile.ui.viewmodel.ListaViewModel
+import com.example.projetomobile.ui.viewmodel.MinhaListaViewModel
+import com.example.projetomobile.ui.viewmodel.MomentoViewModel
 import com.example.projetomobile.ui.viewmodel.UsuarioViewModel
 
 @Composable
@@ -58,6 +66,7 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier){
         composable<Inicio>{
             TelaInicio(
                 viewModel = viewModel(),
+                minhaListaViewModel = viewModel(),
                 irParaDetalhes = { id ->
                     navController.navigate(Detalhe(id))
                 }
@@ -73,13 +82,106 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier){
             })
         }
 
-        composable<Lista> {
+        composable<Lista> { entrada ->
+            val minhaListaViewModel: MinhaListaViewModel = viewModel()
+            DisposableEffect(entrada) {
+                val observador = LifecycleEventObserver{ _, evento ->
+                    if(evento == Lifecycle.Event.ON_RESUME) minhaListaViewModel.listar()
+                }
+                entrada.lifecycle.addObserver(observador)
+                onDispose { entrada.lifecycle.removeObserver(observador) }
+            }
             TelaLista(
                 viewModel = viewModel(),
+                minhaListaViewModel = minhaListaViewModel,
                 irParaDetalhes = {
                     id -> navController
                 .navigate(Detalhe(id))
-            })
+                },
+                irParaEdicao = { navController.navigate(ItemListaEditar(it)) }
+            )
+        }
+
+        composable<ItemListaEditar> { entrada ->
+            val rota = entrada.toRoute<ItemListaEditar>()
+            TelaItemListaEditar(
+                itemId = rota.id,
+                viewModel = viewModel(),
+                filmeViewModel = viewModel(),
+                voltar = { navController.popBackStack() }
+            )
+        }
+
+        composable<Colecoes> { entrada ->
+            val listaViewModel: ListaViewModel = viewModel()
+            DisposableEffect(entrada) {
+                val observador = LifecycleEventObserver{ _, evento ->
+                    if(evento == Lifecycle.Event.ON_RESUME) listaViewModel.listar()
+                }
+                entrada.lifecycle.addObserver(observador)
+                onDispose { entrada.lifecycle.removeObserver(observador) }
+            }
+            TelaListas(
+                viewModel = listaViewModel,
+                filmeViewModel = viewModel(),
+                irParaCadastro = { navController.navigate(CadastrarColecao) },
+                irParaEdicao = { navController.navigate(ColecaoEditar(it)) }
+            )
+        }
+
+        composable<CadastrarColecao> {
+            TelaListaFormulario(
+                listaId = null,
+                viewModel = viewModel(),
+                filmeViewModel = viewModel(),
+                voltar = { navController.popBackStack() }
+            )
+        }
+
+        composable<ColecaoEditar> { entrada ->
+            val rota = entrada.toRoute<ColecaoEditar>()
+            TelaListaFormulario(
+                listaId = rota.id,
+                viewModel = viewModel(),
+                filmeViewModel = viewModel(),
+                voltar = { navController.popBackStack() }
+            )
+        }
+
+        composable<Momentos> { entrada ->
+            val momentoViewModel: MomentoViewModel = viewModel()
+            DisposableEffect(entrada) {
+                val observador = LifecycleEventObserver{ _, evento ->
+                    if(evento == Lifecycle.Event.ON_RESUME) momentoViewModel.listar()
+                }
+                entrada.lifecycle.addObserver(observador)
+                onDispose { entrada.lifecycle.removeObserver(observador) }
+            }
+            TelaMomentos(
+                viewModel = momentoViewModel,
+                filmeViewModel = viewModel(),
+                irParaCadastro = { navController.navigate(CadastrarMomento) },
+                irParaEdicao = { navController.navigate(MomentoEditar(it)) }
+            )
+        }
+
+        composable<CadastrarMomento> {
+            TelaMomentoFormulario(
+                momentoId = null,
+                viewModel = viewModel(),
+                filmeViewModel = viewModel(),
+                voltar = { navController.popBackStack() }
+            )
+        }
+
+        composable<MomentoEditar> { entrada ->
+            val rota = entrada.toRoute<MomentoEditar>()
+            TelaMomentoFormulario(
+                momentoId = rota.id,
+                viewModel = viewModel(),
+                filmeViewModel = viewModel(),
+                voltar = { navController.popBackStack() }
+            )
         }
 
         composable<Detalhe>(
@@ -100,6 +202,7 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier){
             TelaDetalhe(
                 filmeId = rota.id,
                 viewModel = viewModel(),
+                minhaListaViewModel = viewModel(),
                 irParaAvaliar = { id ->
                     navController.navigate(Avaliar(id))
                 },

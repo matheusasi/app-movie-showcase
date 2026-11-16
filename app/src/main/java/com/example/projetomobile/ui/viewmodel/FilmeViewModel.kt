@@ -9,6 +9,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projetomobile.auth.SessaoUsuario
 import com.example.projetomobile.data.Filme
+import com.example.projetomobile.data.FilmeGhibli
+import com.example.projetomobile.data.GhibliApi
 import com.example.projetomobile.data.dal.FilmeDAO
 import com.example.projetomobile.validation.FilmeValidator
 import kotlinx.coroutines.CancellationException
@@ -39,6 +41,12 @@ class FilmeViewModel(application: Application): AndroidViewModel(application) {
     var carregando by mutableStateOf(false)
         private set
     var salvo by mutableStateOf(false)
+        private set
+    var filmesGhibli by mutableStateOf<List<FilmeGhibli>>(emptyList())
+        private set
+    var buscandoApi by mutableStateOf(false)
+        private set
+    var mensagemApi by mutableStateOf<String?>(null)
         private set
 
     private fun executar(operacao: suspend () -> Unit){
@@ -135,6 +143,39 @@ class FilmeViewModel(application: Application): AndroidViewModel(application) {
         withContext(Dispatchers.IO) { dao.excluir(id) }
         filmes = filmes.filterNot { it.id == id }
         mensagem = "Filme excluído."
+    }
+
+    fun buscarGhibli(){
+        if(buscandoApi) return
+        filmesGhibli = emptyList()
+        mensagemApi = null
+        buscandoApi = true
+        viewModelScope.launch {
+            try {
+                val resposta = GhibliApi.service.listar()
+                if (resposta.isEmpty()) mensagemApi = "Nenhum filme encontrado"
+                else filmesGhibli = resposta
+            }catch (erro: CancellationException){
+                throw erro
+            }
+            catch (_: Exception){
+                mensagemApi = "Não foi possível consultar a API"
+            } finally {
+                buscandoApi = false
+            }
+        }
+    }
+
+    fun importar(filmeGhibli: FilmeGhibli){
+        if (carregando) return
+        titulo = filmeGhibli.titulo.orEmpty().take(100)
+        ano = filmeGhibli.ano.orEmpty().take(4)
+        genero = "Animação"
+        duracao = filmeGhibli.duracao.orEmpty().take(3)
+        diretor = filmeGhibli.diretor.orEmpty().take(100)
+        sinopse = filmeGhibli.sinopse.orEmpty().take(1000)
+        filmesGhibli = emptyList()
+        mensagemApi = "Dados importados. Confira e salve o filme."
     }
 
     fun consumirSalvo(){ salvo = false }

@@ -1,5 +1,3 @@
-// Tela 3 — Detalhe do filme
-// Responsável: integrante 3
 package com.example.projetomobile.ui
 
 import androidx.compose.foundation.background
@@ -23,20 +21,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.projetomobile.data.ListaManager
 import com.example.projetomobile.data.formatarNota
 import com.example.projetomobile.data.formatarTotal
 import com.example.projetomobile.ui.viewmodel.FilmeViewModel
+import com.example.projetomobile.ui.viewmodel.MinhaListaViewModel
 
 @Composable
 fun TelaDetalhe(
     filmeId: Long,
     viewModel: FilmeViewModel,
+    minhaListaViewModel: MinhaListaViewModel,
     irParaAvaliar: (Long) -> Unit,
     irInicio: () -> Unit,
     voltar: () -> Unit
 ) {
     LaunchedEffect(filmeId) { viewModel.buscarPorId(filmeId) }
+    LaunchedEffect(Unit) { minhaListaViewModel.listar() }
 
     val filme = viewModel.filme
     if (filme == null) {
@@ -45,7 +45,7 @@ fun TelaDetalhe(
         }
         return
     }
-    val naLista = ListaManager.naLista(filme.id)
+    val naLista = minhaListaViewModel.naLista(filme.id)
 
     Column(
         modifier = Modifier
@@ -144,9 +144,18 @@ fun TelaDetalhe(
             BotaoPrimario(
                 texto = if (naLista) "Remover da minha lista" else "Adicionar à minha lista",
                 aoClicar = {
-                    if (naLista) ListaManager.remover(filme.id) else ListaManager.adicionar(filme.id)
+                    if (naLista) minhaListaViewModel.remover(filme.id)
+                    else minhaListaViewModel.adicionar(filme.id)
                 }
             )
+            minhaListaViewModel.mensagem?.let {
+                Text(
+                    text = it,
+                    color = Color(0xFFE8341C),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
             BotaoSecundario(
                 texto = "Avaliar este filme",
                 aoClicar = { irParaAvaliar(filme.id) }

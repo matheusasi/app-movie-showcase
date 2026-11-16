@@ -1,5 +1,3 @@
-// Tela 2 — Buscar
-// Responsável: integrante 2
 package com.example.projetomobile.ui
 
 import androidx.compose.foundation.background
@@ -112,7 +110,6 @@ fun TelaBuscar(
                             aoClicar = { generoAtivo = genero }
                         )
                     }
-                    // Completa a última linha para os chips não esticarem.
                     repeat(3 - linha.size) { Box(modifier = Modifier.weight(1f)) }
                 }
             }

@@ -1,5 +1,3 @@
-// Tela 5 — Avaliar filme
-// Responsável: integrante 2
 package com.example.projetomobile.ui
 
 import androidx.compose.foundation.background
@@ -45,7 +43,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.projetomobile.data.LOCAIS
-import com.example.projetomobile.data.ListaManager
 import com.example.projetomobile.data.formatarNota
 import com.example.projetomobile.ui.viewmodel.AvaliacaoViewModel
 import com.example.projetomobile.ui.viewmodel.FilmeViewModel
@@ -79,7 +76,6 @@ fun TelaAvaliar(
     LaunchedEffect(viewModel.salvo) {
         if (viewModel.salvo) {
             viewModel.consumirSalvo()
-            if (filme != null) ListaManager.avaliar(filme.id)
             comentario = ""
         }
     }

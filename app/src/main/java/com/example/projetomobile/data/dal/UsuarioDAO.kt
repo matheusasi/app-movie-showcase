@@ -104,6 +104,22 @@ internal class UsuarioDAO(context: Context) {
             db.writableDatabase.delete(
                 "avaliacoes", "usuario_id = ?",
                 arrayOf(id.toString()))
+
+            db.writableDatabase.delete(
+                "minha_lista", "usuario_id = ?",
+                arrayOf(id.toString()))
+
+            db.writableDatabase.delete(
+                "lista_filmes", "lista_id IN (SELECT id FROM listas WHERE usuario_id = ?)",
+                arrayOf(id.toString()))
+
+            db.writableDatabase.delete(
+                "listas", "usuario_id = ?",
+                arrayOf(id.toString()))
+
+            db.writableDatabase.delete(
+                "momentos", "usuario_id = ?",
+                arrayOf(id.toString()))
         }
     }
 }

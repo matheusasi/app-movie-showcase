@@ -104,6 +104,18 @@ internal class FilmeDAO(context: Context) {
             db.writableDatabase.delete(
                 "avaliacoes", "filme_id = ?",
                 arrayOf(id.toString()))
+
+            db.writableDatabase.delete(
+                "minha_lista", "filme_id = ?",
+                arrayOf(id.toString()))
+
+            db.writableDatabase.delete(
+                "lista_filmes", "filme_id = ?",
+                arrayOf(id.toString()))
+
+            db.writableDatabase.delete(
+                "momentos", "filme_id = ?",
+                arrayOf(id.toString()))
         }
     }
 }

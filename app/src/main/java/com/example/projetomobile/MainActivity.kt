@@ -14,6 +14,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.projetomobile.auth.SessaoUsuario
 import com.example.projetomobile.navigation.AppNavigation
+import com.example.projetomobile.navigation.Colecoes
 import com.example.projetomobile.navigation.Filmes
 import com.example.projetomobile.navigation.Login
 import com.example.projetomobile.navigation.Menu
@@ -31,13 +32,14 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val rotaAtual = navBackStackEntry?.destination?.route
 
-                // Login e Cadastro ficam sem as barras de navegacao.
                 val mostrarMenu = rotaAtual != null &&
                         !rotaAtual.contains("Login") &&
                         !rotaAtual.contains("Cadastro")
 
                 val titulo = when {
                     rotaAtual == null -> "Cineteca"
+                    rotaAtual.contains("Momento") -> "Momentos"
+                    rotaAtual.contains("Colec") -> "Listas"
                     rotaAtual.contains("Lista") -> "Minha Lista"
                     rotaAtual.contains("Detalhe") -> "Detalhe"
                     rotaAtual.contains("Avaliar") -> "Avaliar"
@@ -55,6 +57,7 @@ class MainActivity : ComponentActivity() {
                             BarraTopo(
                                 titulo = titulo,
                                 irFilmes = { navController.navigate(Filmes) },
+                                irListas = { navController.navigate(Colecoes) },
                                 irUsuarios = { navController.navigate(Usuarios) },
                                 sair = {
                                     SessaoUsuario.encerrar()

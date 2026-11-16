@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.projetomobile.auth.SessaoUsuario
 import com.example.projetomobile.data.Avaliacao
 import com.example.projetomobile.data.dal.AvaliacaoDAO
+import com.example.projetomobile.data.dal.MinhaListaDAO
 import com.example.projetomobile.data.formatarNota
 import com.example.projetomobile.validation.AvaliacaoValidator
 import kotlinx.coroutines.CancellationException
@@ -19,6 +20,7 @@ import kotlinx.coroutines.withContext
 
 class AvaliacaoViewModel(application: Application): AndroidViewModel(application) {
     private val dao = AvaliacaoDAO(application)
+    private val minhaListaDao = MinhaListaDAO(application)
     val usuarioAtualId: Long? get() = SessaoUsuario.usuarioId
     var avaliacoes by mutableStateOf<List<Avaliacao>>(emptyList())
         private set
@@ -70,6 +72,7 @@ class AvaliacaoViewModel(application: Application): AndroidViewModel(application
         AvaliacaoValidator.validar(data, nota, comentarioLimpo)
         withContext(Dispatchers.IO) {
             dao.cadastrar(atual, filmeId, data, onde, formatarNota(nota), comentarioLimpo)
+            minhaListaDao.marcarAssistido(atual, filmeId)
         }
         mensagem = "Avaliação salva com sucesso."
         salvo = true

@@ -10,7 +10,7 @@ internal class AppDatabase(context: Context): SQLiteOpenHelper(
     File(context.noBackupFilesDir,
         "cineteca.db").absolutePath,
     null,
-    2
+    3
 ) {
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL("""
@@ -37,6 +37,7 @@ internal class AppDatabase(context: Context): SQLiteOpenHelper(
         """.trimIndent())
 
         criarFilmes(db)
+        criarListas(db)
     }
 
     override fun onUpgrade(
@@ -45,6 +46,48 @@ internal class AppDatabase(context: Context): SQLiteOpenHelper(
         versaoNova: Int
     ) {
         if (versaoAntiga < 2) criarFilmes(db)
+        if (versaoAntiga < 3) criarListas(db)
+    }
+
+    private fun criarListas(db: SQLiteDatabase) {
+        db.execSQL("""
+            CREATE TABLE minha_lista(
+            id INTEGER PRIMARY KEY,
+            usuario_id INTEGER NOT NULL,
+            filme_id INTEGER NOT NULL,
+            status TEXT NOT NULL,
+            observacao TEXT NOT NULL CHECK(length(observacao) <= 200),
+            UNIQUE(usuario_id, filme_id)
+            )
+        """.trimIndent())
+
+        db.execSQL("""
+            CREATE TABLE listas(
+            id INTEGER PRIMARY KEY,
+            usuario_id INTEGER NOT NULL,
+            nome TEXT NOT NULL CHECK(length(nome) BETWEEN 3 AND 60),
+            descricao TEXT NOT NULL CHECK(length(descricao) <= 200)
+            )
+        """.trimIndent())
+
+        db.execSQL("""
+            CREATE TABLE lista_filmes(
+            lista_id INTEGER NOT NULL,
+            filme_id INTEGER NOT NULL,
+            PRIMARY KEY(lista_id, filme_id)
+            )
+        """.trimIndent())
+
+        db.execSQL("""
+            CREATE TABLE momentos(
+            id INTEGER PRIMARY KEY,
+            usuario_id INTEGER NOT NULL,
+            filme_id INTEGER NOT NULL,
+            data TEXT NOT NULL,
+            legenda TEXT NOT NULL CHECK(length(legenda) <= 200),
+            foto BLOB NOT NULL
+            )
+        """.trimIndent())
     }
 
     private fun criarFilmes(db: SQLiteDatabase) {

@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -82,6 +84,32 @@ fun TelaFilmeFormulario(
                 )
             }
             if (viewModel.carregando) CircularProgressIndicator(color = Color(0xFFE8341C))
+
+            if (filmeId == null) {
+                BotaoSecundario(
+                    texto = if (viewModel.buscandoApi) "Buscando..." else "Importar da API Ghibli"
+                ) { viewModel.buscarGhibli() }
+                if (viewModel.buscandoApi) LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Color(0xFFE8341C)
+                )
+                viewModel.mensagemApi?.let {
+                    Text(text = it, color = Color(0xFF8C8C8C), fontSize = 15.sp)
+                }
+                viewModel.filmesGhibli.forEach { filmeGhibli ->
+                    TextButton(
+                        onClick = { viewModel.importar(filmeGhibli) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "${filmeGhibli.titulo.orEmpty()} (${filmeGhibli.ano.orEmpty()})",
+                            color = Color(0xFF1B1B1B),
+                            fontSize = 16.sp,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+            }
 
             if (filmeId == null || viewModel.filme != null) {
                 CampoFilme(rotulo = "Título", valor = viewModel.titulo, aoMudar = viewModel::mudarTitulo)
